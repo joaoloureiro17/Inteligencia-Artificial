@@ -1,0 +1,101 @@
+from queue import Queue
+import math
+
+##############################
+# Dado um caminho, calcula o seu custo
+###############################
+
+from queue import Queue
+import math
+
+##############################
+# Dado um caminho, calcula o seu custo
+###############################
+
+def calcula_custo(caminho, m_graph):
+    teste = caminho
+    custo = 0
+    i = 0
+    while i + 1 < len(teste):
+        custo = custo + get_arc_cost(teste[i], teste[i + 1], m_graph)
+        i = i + 1
+    return custo
+
+def procura_BFS(start, end, m_graph):
+    # definir nodos visitados para evitar ciclos
+    visited = set()
+    fila = Queue()
+
+    # adicionar o nodo inicial à fila e aos visitados
+    fila.put(start)
+    visited.add(start)
+
+    # garantir que o start node não tem pais...
+    parent = dict()
+    parent[start] = None
+
+    path_found = False
+    while not fila.empty() and not path_found:
+        nodo_atual = fila.get()
+        if nodo_atual == end:
+            path_found = True
+        else:
+            for (adjacente, peso) in m_graph[nodo_atual]:
+                if adjacente not in visited:
+                    fila.put(adjacente)
+                    parent[adjacente] = nodo_atual
+                    visited.add(adjacente)
+
+    # Reconstruir o caminho
+    path = []
+    custo = 0
+    if path_found:
+        path.append(end)
+        while parent[end] is not None:
+            path.append(parent[end])
+            end = parent[end]
+        path.reverse()
+        # função calcula custo caminho
+        custo = calcula_custo(path, m_graph)
+    return (path, custo)
+
+def get_arc_cost(node1, node2, m_graph):
+    custoT = math.inf
+    a = m_graph[node1]  # lista de arestas para aquele nodo
+    for (nodo, custo) in a:
+        if nodo == node2:
+            custoT = custo
+    return custoT
+
+
+    
+    
+class Graph:
+    def __init__(self):
+        self.m_graph = {}
+
+    def add_edge(self, node1, node2, cost):
+        if node1 not in self.m_graph:
+            self.m_graph[node1] = []
+        self.m_graph[node1].append((node2, cost))
+
+    def get_neighbors(self, node):
+        return self.m_graph.get(node, [])
+
+# Exemplo de uso
+grafo_exemplo = Graph()
+
+grafo_exemplo.add_edge("A", "B", 2)
+grafo_exemplo.add_edge("A", "C", 1)
+grafo_exemplo.add_edge("B", "C", 3)
+grafo_exemplo.add_edge("B", "D", 4)
+grafo_exemplo.add_edge("C", "D", 2)
+grafo_exemplo.add_edge("D", "A", 5)
+
+# Agora você pode usar procura_BFS e calcula_custo com este grafo
+start_node = "A"
+end_node = "D"
+path, cost = procura_BFS(start_node, end_node, grafo_exemplo.m_graph)
+
+print("Caminho:", path)
+print("Custo:", cost)

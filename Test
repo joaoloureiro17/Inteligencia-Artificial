@@ -1,0 +1,54 @@
+from collections import deque
+
+default_pos = {
+    'Vila Nova de Famalicão': {'pos': (0, 0), 'connections': [('Gavião', 27), ('Antas', 22), ('Calendário', 27), ('Mouquim', 34), ('Louro', 40), ('Brufe', 30)]},
+    'Antas': {'pos' : (0.9, -1.2), 'connections' : [('Calendário', 39), ('Esmeriz', 26), ('Vale', 52)]},
+    'Calendário': {'pos' : (-1, -1.466), 'connections' : [('Brufe', 16)]},
+    'Gavião': {'pos' : (1.052, 1.736), 'connections' : [('Vale', 35), ('Mouquim', 30), ('Antas', 50)]},
+    'Brufe': {'pos' : (-1.396, -0.1), 'connections' : [('Louro', 34), ('Outiz', 25)]},
+    'Outiz': {'pos' : (-2.92, 0.954), 'connections' : [('Vilarinho', 52), ('Louro', 27)]},
+    'Mouquim': {'pos' : (-0.447, 2.46), 'connections' : [('Louro', 16)]},
+    'Esmeriz': {'pos' : (0.469, -3.559), 'connections' : []},
+    'Vale': {'pos' : (3.322, 1.123), 'connections' : []},
+    'Louro': {'pos' : (-1.383, 2.4), 'connections' : []},
+    'Vilarinho': {'pos' : (-2.839, -2.616), 'connections' : []}
+}
+
+def bfs(graph, start, goal):
+    # Create a queue for BFS
+    queue = deque([(start, [start])])
+    
+    # Mark the start node as visited
+    visited = set([start])
+
+    # Check if the start node is the goal
+    if start == goal:
+        return [start]
+
+    while queue:
+        # Get the current node and path
+        current, path = queue.popleft()
+
+        # Check all neighbors of the current node
+        for neighbor, _ in graph[current]['connections']:
+            if neighbor not in visited:
+                # If the neighbor is the goal, return the path
+                if neighbor == goal:
+                    return path + [neighbor]
+
+                # Mark the neighbor as visited and enqueue it with the updated path
+                visited.add(neighbor)
+                queue.append((neighbor, path + [neighbor]))
+
+    # If no path is found
+    return None
+
+# Example usage
+start_node = 'Vila Nova de Famalicão'
+goal_node = 'Vale'
+path = bfs(default_pos, start_node, goal_node)
+
+if path:
+    print(f"Shortest path from {start_node} to {goal_node}: {path}")
+else:
+    print(f"No path found from {start_node} to {goal_node}")
